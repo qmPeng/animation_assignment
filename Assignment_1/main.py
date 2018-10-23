@@ -23,15 +23,22 @@ class MyPanel(wx.Panel):
         self.AnimationButton = wx.Button(self, wx.ID_ANY, "Animate/Stop", pos=(1030, 60), size=(200, 40), style=0)
 
         self.stiffnessLabel = wx.StaticText(self, -1, pos=(1030, 150), style=wx.ALIGN_CENTER)
-        self.stiffnessLabel.SetLabel("stiffness")
-        self.stiffnessLabel = wx.Slider(self, -1, pos=(1030, 180), size=(200, 50),
-                                        style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS, value=0, minValue=-5, maxValue=5)
+        self.stiffnessLabel.SetLabel("stiffness:" + str(self.canvas.clothObject.stiffness))
+        self.stiffnessSlider = wx.Slider(self, -1, pos=(1030, 180), size=(200, 50),
+                                        style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS, value=1, minValue=1, maxValue=30)
         self.stepLable = wx.StaticText(self, -1, pos=(1030, 250), style=wx.ALIGN_CENTER)
-        self.stepLable.SetLabel("Time Stop")
-        self.stepLable = wx.Slider(self, -1, pos=(1030, 280), size=(200, 50), style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS,
-                                   value=0, minValue=-5, maxValue=5)
+        self.stepLable.SetLabel("Time Interval:" + str(self.canvas.stepSize))
+        self.stepSlider = wx.Slider(self, -1, pos=(1030, 280), size=(200, 50), style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS,
+                                   value=10, minValue=1, maxValue=300)
+        self.dampLabel = wx.StaticText(self, -1, pos= (1030, 350), style = wx.ALIGN_CENTER)
+        self.dampLabel.SetLabel("Damping:" + str(self.canvas.clothObject.damp))
+        self.dampSlider = wx.Slider(self, -1, pos=(1030, 380), size=(200, 50), style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS,
+                                    value=0, minValue=0, maxValue=30)
         self.Bind(wx.EVT_BUTTON, self.OnAnimationButton, self.AnimationButton)
         self.Bind(wx.EVT_BUTTON, self.OnResetButton, self.ResetButton)
+        self.Bind(wx.EVT_SLIDER, self.OnStiffnessSlider, self.stiffnessSlider)
+        self.Bind(wx.EVT_SLIDER, self.OnStepSlider, self.stepSlider)
+        self.Bind(wx.EVT_SLIDER, self.OnDampSlider, self.dampSlider)
 
     def OnAnimationButton(self, event):
         if self.bAnimation is False:
@@ -43,6 +50,24 @@ class MyPanel(wx.Panel):
 
     def OnResetButton(self, event):
         self.canvas.clothObject.resetMassSpring()
+
+    def OnStiffnessSlider(self, event):
+        val = event.GetEventObject().GetValue()
+        stiffness = 2**val
+        self.stiffnessLabel.SetLabel("Stiffness:" + str(stiffness))
+        self.canvas.clothObject.stiffness = stiffness
+
+    def OnStepSlider(self, event):
+        val = event.GetEventObject().GetValue()
+        stepSize = 0.0001*val
+        self.stepLable.SetLabel("Time Interval:" + str(stepSize))
+        self.canvas.stepSize = stepSize
+
+    def OnDampSlider(self, event):
+        val = event.GetEventObject().GetValue()
+        damp = val / 10.0
+        self.dampLabel.SetLabel("Damping Coeff. :" + str(damp))
+        self.canvas.damp = damp
 
 
 class OpenGLCanves(glcanvas.GLCanvas):
@@ -58,6 +83,7 @@ class OpenGLCanves(glcanvas.GLCanvas):
         self.Bind(wx.EVT_IDLE, self.OnIdle)
         self.InitGL()
         self.clothObject = ClothObject.ClothObject(1, 1, 5, 5)
+        self.stepSize = 10
         self.bAnimation = False
 
     def InitGL(self):
@@ -69,7 +95,7 @@ class OpenGLCanves(glcanvas.GLCanvas):
 
     def OnIdle(self, event):
         if self.bAnimation:
-            self.clothObject.update(0.01)
+            self.clothObject.update(self.stepSize)
         self.Refresh()
 
     def OnDraw(self, event):
@@ -78,11 +104,13 @@ class OpenGLCanves(glcanvas.GLCanvas):
             self.initialized = True
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
         self.clothObject.drawSpring()
-        # glMatrixMode(GL_MODELVIEW)
-        # glLoadIdentity()
-        # glTranslatef(0, 0, -2)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        glTranslatef(-0.5, -0.5, -2.5)
+
         # glRotate(self.angle, 0, 1, 0)
         #
+        # glColor3f(1.0, 0.0, 0.0)
         # glBegin(GL_QUADS)
         # glVertex3f(0.5, 0.5, 0)
         # glVertex3f(-0.5, 0.5, 0)
