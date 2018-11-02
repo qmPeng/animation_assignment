@@ -103,9 +103,14 @@ class ClothObject:
 
         for i in range(0, self.totalNumberOfParticles):
             # acc = self.force[i] / self.mass[i] + gravity
-            if i is not 0 and i is not self.nW-1:
-                self.velocity[i] = self.velocity[i] + dVel[i*3:i*3+3] + gravity * dt
+            # if i is not 0 and i is not self.nW-1:
+            if i in range(self.nW, self.nW * self.nH):
+                # self.velocity[i] = self.velocity[i] + dVel[i*3:i*3+3] + gravity * dt
+                # self.verts[i] = self.verts[i] + self.velocity[i] * dt
+                self.velocity[i] = self.velocity[i] + dVel[i * 3:i * 3 + 3] + gravity * dt
                 self.verts[i] = self.verts[i] + self.velocity[i] * dt
+            # self.velocity[i] = self.velocity[i] + gravity * dt
+            # self.verts[i] = self.verts[i] + self.velocity[i] * dt
 
     def computeForce(self):
         for i in range(0, self.totalNumberOfParticles):

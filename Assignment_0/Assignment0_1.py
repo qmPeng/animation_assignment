@@ -53,7 +53,7 @@ class OpenGLCanves(glcanvas.GLCanvas):
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
         glTranslatef(0, 0, -2)
-        glRotate(self.angle, 1, 1, 0)
+        glRotate(self.angle, 0, 0, 1)
 
         glBegin(GL_QUADS)
         glVertex3f(0.5, 0.5, 0)

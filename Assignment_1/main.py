@@ -23,10 +23,12 @@ class MyPanel(wx.Panel):
         self.AnimationButton = wx.Button(self, wx.ID_ANY, "Animate/Stop", pos=(1030, 60), size=(200, 40), style=0)
 
         self.stiffnessLabel = wx.StaticText(self, -1, pos=(1030, 150), style=wx.ALIGN_CENTER)
+        # self.stiffnessLabel.SetLabel("stiffness:")
         self.stiffnessLabel.SetLabel("stiffness:" + str(self.canvas.clothObject.stiffness))
         self.stiffnessSlider = wx.Slider(self, -1, pos=(1030, 180), size=(200, 50),
                                         style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS, value=1, minValue=1, maxValue=30)
         self.stepLable = wx.StaticText(self, -1, pos=(1030, 250), style=wx.ALIGN_CENTER)
+        # self.stepLable.SetLabel("Time Interval:")
         self.stepLable.SetLabel("Time Interval:" + str(self.canvas.stepSize))
         self.stepSlider = wx.Slider(self, -1, pos=(1030, 280), size=(200, 50), style=wx.SL_HORIZONTAL | wx.SL_AUTOTICKS,
                                    value=10, minValue=1, maxValue=300)
@@ -82,7 +84,7 @@ class OpenGLCanves(glcanvas.GLCanvas):
         self.Bind(wx.EVT_PAINT, self.OnDraw)
         self.Bind(wx.EVT_IDLE, self.OnIdle)
         self.InitGL()
-        self.clothObject = ClothObject.ClothObject(1, 1, 5, 5)
+        self.clothObject = ClothObject.ClothObject(1, 1, 12, 15)
         self.stepSize = 10
         self.bAnimation = False
 
@@ -106,7 +108,8 @@ class OpenGLCanves(glcanvas.GLCanvas):
         self.clothObject.drawSpring()
         glMatrixMode(GL_MODELVIEW)
         glLoadIdentity()
-        glTranslatef(-0.5, -0.5, -2.5)
+        gluLookAt(2, 2, 2, 0, 0, 0, 0, 1, 0)
+        # glTranslatef(-0.5, -0.5, -2.5)
 
         # glRotate(self.angle, 0, 1, 0)
         #
